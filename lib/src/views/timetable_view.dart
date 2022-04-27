@@ -24,6 +24,8 @@ class TimetableView extends StatefulWidget {
 
 class _TimetableViewState extends State<TimetableView>
     with TimetableViewController {
+  bool _jumped = false;
+
   @override
   void initState() {
     initController();
@@ -131,12 +133,16 @@ class _TimetableViewState extends State<TimetableView>
   }
 
   Widget _buildLaneList(BuildContext context) {
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      final pos = widget.laneEventsList
-          .take(widget.jumpToLaneIndex)
-          .fold<double>(0, (a, e) => a + e.lane.width);
-      horizontalScrollController.jumpTo(pos);
-    });
+    if (!_jumped) {
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
+        _jumped = true;
+        final pos = widget.laneEventsList
+            .take(widget.jumpToLaneIndex)
+            .fold<double>(0, (a, e) => a + e.lane.width);
+        horizontalScrollController.jumpTo(pos);
+      });
+    }
+
     return Container(
       alignment: Alignment.topLeft,
       color: widget.timetableStyle.laneColor,
