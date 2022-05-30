@@ -134,7 +134,7 @@ class _TimetableViewState extends State<TimetableView>
 
   Widget _buildLaneList(BuildContext context) {
     if (!_jumped) {
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         _jumped = true;
         final pos = widget.laneEventsList
             .take(widget.jumpToLaneIndex)
