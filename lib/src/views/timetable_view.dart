@@ -7,14 +7,16 @@ import 'package:flutter_timetable_view/src/views/diagonal_scroll_view.dart';
 import 'package:flutter_timetable_view/src/views/lane_view.dart';
 
 class TimetableView extends StatefulWidget {
-  final List<LaneEvents> laneEventsList;
-  final TimetableStyle timetableStyle;
-
   TimetableView({
     Key? key,
     required this.laneEventsList,
     this.timetableStyle: const TimetableStyle(),
+    this.jumpToLaneIndex = 0,
   }) : super(key: key);
+
+  final List<LaneEvents> laneEventsList;
+  final TimetableStyle timetableStyle;
+  final int jumpToLaneIndex;
 
   @override
   _TimetableViewState createState() => _TimetableViewState();
@@ -22,6 +24,8 @@ class TimetableView extends StatefulWidget {
 
 class _TimetableViewState extends State<TimetableView>
     with TimetableViewController {
+  bool _jumped = false;
+
   @override
   void initState() {
     initController();
@@ -129,6 +133,16 @@ class _TimetableViewState extends State<TimetableView>
   }
 
   Widget _buildLaneList(BuildContext context) {
+    if (!_jumped) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _jumped = true;
+        final pos = widget.laneEventsList
+            .take(widget.jumpToLaneIndex)
+            .fold<double>(0, (a, e) => a + e.lane.width);
+        horizontalScrollController.jumpTo(pos);
+      });
+    }
+
     return Container(
       alignment: Alignment.topLeft,
       color: widget.timetableStyle.laneColor,
